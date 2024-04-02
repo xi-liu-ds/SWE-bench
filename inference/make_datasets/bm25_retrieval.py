@@ -6,7 +6,7 @@ import shutil
 import traceback
 import subprocess
 from filelock import FileLock
-from typing import Any
+from typing import Any, List, Dict
 from datasets import load_from_disk, load_dataset
 from pyserini.search.lucene import LuceneSearcher
 from git import Repo
@@ -78,7 +78,7 @@ class ContextManager:
 
 def file_name_and_contents(filename, relative_path):
     text = relative_path + "\n"
-    with open(filename) as f:
+    with open(filename, encoding="utf8") as f:
         text += f.read()
     return text
 
@@ -86,7 +86,7 @@ def file_name_and_contents(filename, relative_path):
 def file_name_and_documentation(filename, relative_path):
     text = relative_path + "\n"
     try:
-        with open(filename) as f:
+        with open(filename, encoding="utf8") as f:
             node = ast.parse(f.read())
         data = ast.get_docstring(node)
         if data:
@@ -108,7 +108,7 @@ def file_name_and_documentation(filename, relative_path):
 
 def file_name_and_docs_jedi(filename, relative_path):
     text = relative_path + "\n"
-    with open(filename) as f:
+    with open(filename, encoding="utf8") as f:
         source_code = f.read()
     try:
         script = jedi.Script(source_code, path=filename)
@@ -418,13 +418,13 @@ def get_index_paths_worker(
 
 
 def get_index_paths(
-    remaining_instances: list[dict[str, Any]],
+    remaining_instances: List[Dict[str, Any]],
     root_dir_name: str,
     document_encoding_func: Any,
     python: str,
     token: str,
     output_file: str,
-) -> dict[str, str]:
+) -> Dict[str, str]:
     """
     Retrieves the index paths for the given instances using multiple processes.
 
